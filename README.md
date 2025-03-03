@@ -1,111 +1,49 @@
-"""
-YouTube Video Downloader
-Copyright (c) 2025 Dnvr Christ Maniema. Tous droits réservés.
 
-Ce script permet de télécharger des vidéos YouTube en fonction de la qualité choisie par l'utilisateur.
-Il prend en charge les systèmes Windows, macOS et Linux.
-"""
+---
 
-import os
-import customtkinter as ctk
-import yt_dlp
-from tkinter import messagebox, StringVar, OptionMenu
-import platform
-import subprocess
+# **Téléchargeur de Vidéos YouTube**
 
-# Fonction pour télécharger la vidéo
-def download_video():
-    url = url_entry.get()
-    
-    if not url:
-        messagebox.showerror("Erreur", "Veuillez entrer une URL valide.")
-        return
+**Description** :  
+Ce projet est un téléchargeur de vidéos YouTube simple et efficace, développé en Python. Il permet aux utilisateurs de télécharger des vidéos YouTube au format de leur choix en fournissant simplement l'URL de la vidéo. L'interface utilisateur est conviviale et construite avec `customtkinter`, offrant une expérience moderne et personnalisable.
 
-    try:
-        # Chemin où les vidéos seront téléchargées (adapté à tous les systèmes)
-        download_folder = os.path.join(os.path.expanduser("~"), "Downloads")
-        
-        # Options de téléchargement
-        ydl_opts = {
-            'outtmpl': os.path.join(download_folder, '%(title)s.%(ext)s'),
-            'progress_hooks': [progress_hook],
-        }
+---
 
-        # Choix du format
-        format_choice = format_var.get()
-        if format_choice == "Meilleure qualité vidéo":
-            ydl_opts['format'] = 'bestvideo+bestaudio/best'
-        elif format_choice == "Qualité moyenne vidéo":
-            ydl_opts['format'] = 'mp4'
-        elif format_choice == "Audio uniquement (MP3)":
-            ydl_opts['format'] = 'bestaudio/best'
-            ydl_opts['postprocessors'] = [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }]
+## **Fonctionnalités**
+- 📥 **Téléchargement de vidéos** : Téléchargez des vidéos YouTube en fournissant l'URL.
+- 🎥 **Format de téléchargement** : Choix du meilleur format disponible (vidéo + audio).
+- 📂 **Dossier de téléchargement** : Les vidéos sont enregistrées dans le dossier `Téléchargements` de l'utilisateur.
+- 🖥️ **Interface graphique moderne** : Utilisation de `customtkinter` pour une interface sombre et élégante.
+- 📊 **Barre de progression** : Affiche la progression du téléchargement en temps réel.
+- 🌍 **Multiplateforme** : Compatible avec Windows, macOS et Linux.
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+---
 
-        messagebox.showinfo("Succès", f"Téléchargement terminé dans {download_folder}")
-        open_download_folder(download_folder)  # Ouvrir le dossier de téléchargement
-    except Exception as e:
-        messagebox.showerror("Erreur", f"Erreur de téléchargement : {e}")
+## **Technologies utilisées**
+- 🐍 **Python** : Langage de programmation principal.
+- 🖼️ **CustomTkinter** : Bibliothèque pour une interface graphique moderne.
+- 📦 **yt-dlp** : Bibliothèque pour télécharger des vidéos YouTube.
+- 🛠️ **PyInstaller** : Utilisé pour créer des exécutables pour Windows, macOS et Linux.
 
-# Fonction de mise à jour de la barre de progression
-def progress_hook(d):
-    if d['status'] == 'downloading':
-        percent_str = d.get('_percent_str', '0.0%').strip('%')
-        try:
-            percent = float(percent_str)
-            progress_bar.set(percent / 100)
-        except ValueError:
-            progress_bar.set(0)  # Réinitialise si la conversion échoue
+---
 
-# Fonction pour ouvrir le dossier de téléchargement
-def open_download_folder(path):
-    """Ouvre le dossier de téléchargement selon l'OS."""
-    system = platform.system()
-    if system == "Windows":
-        os.startfile(path)  # Windows
-    elif system == "Darwin":  # macOS
-        subprocess.run(["open", path])
-    elif system == "Linux":
-        subprocess.run(["xdg-open", path])
-    else:
-        print(f"Système d'exploitation non supporté : {system}")
+## **Comment utiliser ce projet**
 
-# Configuration de la fenêtre principale
-ctk.set_appearance_mode("dark")  # Mode sombre
-ctk.set_default_color_theme("blue")  # Thème bleu
+### **Prérequis**
+- Python 3.7 ou supérieur installé.
+- Les bibliothèques suivantes doivent être installées :
+  ```bash
+  pip install customtkinter yt-dlp
+  ```
 
-window = ctk.CTk()
-window.title("Téléchargeur de Vidéos YouTube")
-window.geometry("500x400")
+---
 
-# Titre
-title_label = ctk.CTkLabel(window, text="Télécharger une vidéo YouTube", font=("Helvetica", 20))
-title_label.pack(pady=20)
+## **Contribuer**
+Les contributions sont les bienvenues ! Si vous souhaitez améliorer ce projet, suivez ces étapes :
+1. Forkez ce repository.
+2. Créez une nouvelle branche (`git checkout -b feature/nouvelle-fonctionnalite`).
+3. Committez vos changements (`git commit -m 'Ajouter une nouvelle fonctionnalité'`).
+4. Pushez la branche (`git push origin feature/nouvelle-fonctionnalite`).
+5. Ouvrez une Pull Request.
 
-# Champ pour l'URL
-url_entry = ctk.CTkEntry(window, placeholder_text="Entrez l'URL de la vidéo", width=350)
-url_entry.pack(pady=10)
+---
 
-# Menu déroulant pour choisir le format
-format_var = StringVar(value="Meilleure qualité vidéo")  # Valeur par défaut
-format_options = ["Meilleure qualité vidéo", "Qualité moyenne vidéo", "Audio uniquement (MP3)"]
-format_menu = ctk.CTkOptionMenu(window, variable=format_var, values=format_options)
-format_menu.pack(pady=10)
-
-# Bouton pour télécharger
-download_button = ctk.CTkButton(window, text="Télécharger", command=download_video, fg_color="green", hover_color="darkgreen")
-download_button.pack(pady=20)
-
-# Barre de progression
-progress_bar = ctk.CTkProgressBar(window, width=300)
-progress_bar.pack(pady=10)
-progress_bar.set(0)
-
-# Lancer l'interface
-window.mainloop()
