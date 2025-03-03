@@ -109,5 +109,3 @@ progress_bar.set(0)
 
 # Lancer l'interface
 window.mainloop()
-
-
